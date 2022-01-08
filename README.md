@@ -16,6 +16,7 @@ Type=simple
 ExecStart=/home/pi/homeassistant/config/nps_client/ npc -server=IP:8012 -vkey=123456asdkj  
 [Install]  
 WantedBy=multi-user.target  
+
 3.开机启动服务，启动服务  
 
     sudo systemctl  enable npsc.service  #开机自动运行
