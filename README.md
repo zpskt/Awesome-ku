@@ -1,7 +1,7 @@
 # Tools
 一些实用工具的记录
 tools_file文件存放一些需要的安装文件
-## 说明
+## 工具说明
 ### 编写自己的启动服务开机启动
 1.新建服务
 
@@ -37,6 +37,11 @@ WantedBy=multi-user.target
         ./npc -server=xxx.xxx.xxx.xxx:8024 -vkey=hxxxxx4hzc -type=tcp  
 
 登陆服务端的web管理就可以看到你的vkey是多少以及快捷连接命令了
+### webssh网页ssh
+项目地址：https://github.com/billchurch/webssh2  
+因为可能不同的架构，所以自己构建容器镜像，进入tools_file/webssh2文件夹下执行命令  
 
-
+1.      docker build -t webssh2 .
+2.      docker run --name webssh2 -d -p 2222:2222 webssh2
+容器开启后，你就可以访问页面了：http://192.168.0.101:2222/ssh/host/192.168.0.101
 
