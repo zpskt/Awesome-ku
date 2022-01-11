@@ -45,3 +45,11 @@ WantedBy=multi-user.target
 2.      docker run --name webssh2 -d -p 2222:2222 webssh2
 容器开启后，你就可以访问页面了：http://192.168.0.101:2222/ssh/host/192.168.0.101
 
+### 网易云音乐API
+项目地址：https://github.com/Binaryify/NeteaseCloudMusicApi  
+文档：https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi  
+由于我是放在树莓派上架构不同，所以选择自定义镜像的形式  
+
+                git clone https://github.com/Binaryify/NeteaseCloudMusicApi && cd NeteaseCloudMusicApi
+                sudo docker build . -t netease-music-api
+                sudo docker run -d -p 3000:3000 netease-music-api
