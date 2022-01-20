@@ -53,3 +53,5 @@ WantedBy=multi-user.target
                 git clone https://github.com/Binaryify/NeteaseCloudMusicApi && cd NeteaseCloudMusicApi
                 sudo docker build . -t netease-music-api
                 sudo docker run -d -p 3000:3000 netease-music-api
+### 检测蓝牙设备距离锁定解锁mac
+项目地址：https://github.com/ts1/BLEUnlock
