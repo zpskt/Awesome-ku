@@ -1,5 +1,5 @@
 # Tools
-一些实用工具的记录
+一些好用的工具的记录
 tools_file文件存放一些需要的安装文件
 ## 工具说明
 ### 编写自己的启动服务开机启动
@@ -54,4 +54,8 @@ WantedBy=multi-user.target
                 sudo docker build . -t netease-music-api
                 sudo docker run -d -p 3000:3000 netease-music-api
 ### 检测蓝牙设备距离锁定解锁mac
-项目地址：https://github.com/ts1/BLEUnlock
+项目地址：https://github.com/ts1/BLEUnlock  
+### docker管理的UI界面  
+
+    docker run -d -p 9000:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --name portainer  docker.io/portainer/portainer
+现在你就可以访问 http://localhost:9000 了，第一次进入会自动创建密码
