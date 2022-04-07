@@ -59,3 +59,18 @@ WantedBy=multi-user.target
 
     docker run -d -p 9000:9000 --restart=always -v /var/run/docker.sock:/var/run/docker.sock --name portainer  docker.io/portainer/portainer
 现在你就可以访问 http://localhost:9000 了，第一次进入会自动创建密码
+## 技巧知识 
+### Pycharm绘图
+[csdn参考链接](https://blog.csdn.net/weixin_51740371/article/details/109555345)        
+绘图文件夹  
+demo1.py是绘图demo代码，simhei.zip是中文包。
+Mac端会出现中文乱码问题，解决如下  
+>import matplotlib  
+>print (matplotlib.matplotlib_fname()) # 将会获得matplotlib配置文件  
+>\#我的是在"/Library/Python/3.8/site-packages/matplotlib/mpl-data/matplotlibrc  
+> 解压中文包得到一个ttf文件,复制文件到"/Library/Python/3.8/site-packages/matplotlib/mpl-data/fonts/ttf
+文件夹里面   
+> cd ~   
+> ls -a  
+> cd .matplotlib  && rm fontlist-v330.json  
+> 重启pycharm搞定   
