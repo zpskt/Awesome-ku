@@ -1,4 +1,4 @@
-##网页
+## 网页  
 [mac 下载软件](https://www.macbl.com/)  
 [好用的变成学习网址](https://r2coding.com/#/)  
 [找pdf电子书](https://www.jiumodiary.com/)  
@@ -8,7 +8,9 @@
 [矢量图标库](https://www.iconfont.cn/)  
 [谷歌学术可用链接](https://ac.scmor.com/)  
 [sci-hub可用链接](https://tool.yovisun.com/scihub/)  
-##浏览器插件
+[根据arxiv下载文档](https://arxiv2bibtex.org/)  
+[在线latex网页](https://cn.overleaf.com/)  
+## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
 

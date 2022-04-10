@@ -1,4 +1,4 @@
-#绘图知识
+# 绘图知识  
 ### Pycharm绘图
 [csdn参考链接](https://blog.csdn.net/weixin_51740371/article/details/109555345)        
 绘图文件夹  
