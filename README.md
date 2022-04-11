@@ -74,3 +74,5 @@ Mac端会出现中文乱码问题，解决如下
 > ls -a  
 > cd .matplotlib  && rm fontlist-v330.json  
 > 重启pycharm搞定   
+> 
+> test
