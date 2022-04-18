@@ -10,6 +10,7 @@
 [sci-hub可用链接](https://tool.yovisun.com/scihub/)  
 [根据arxiv下载文档](https://arxiv2bibtex.org/)  
 [在线latex网页](https://cn.overleaf.com/)  
+[神奇的AI抠图！好用](https://magiceraser.io/)  
 ## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
