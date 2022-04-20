@@ -1,7 +1,8 @@
 ## 网页  
 [mac 下载软件](https://www.macbl.com/)  
 [好用的变成学习网址](https://r2coding.com/#/)  
-[找pdf电子书](https://www.jiumodiary.com/)  
+[找pdf电子书1：这个基本凉了](https://www.jiumodiary.com/)  
+[找电子书2](https://zh.z-lib.org/)  
 [清华大学镜像、软件源](https://mirrors.tuna.tsinghua.edu.cn/)  
 [画流程图：国内](https://www.processon.com/)  
 [画流程图：国外](https://www.processon.com/)  
@@ -10,7 +11,12 @@
 [sci-hub可用链接](https://tool.yovisun.com/scihub/)  
 [根据arxiv下载文档](https://arxiv2bibtex.org/)  
 [在线latex网页](https://cn.overleaf.com/)  
-[神奇的AI抠图！好用](https://magiceraser.io/)  
+[神奇的AI抠图！好用](https://magiceraser.io/)   
+[看代码运行逻辑，支持python、java,js,c,ruby,xml](https://pythontutor.com/)  
+[Git初学者指南](https://ohshitgit.com/zh)  
+[编程书籍学习github](https://github.com/justjavac/free-programming-books-zh_CN)  
+[编程书籍教学](https://www.bookstack.cn/)  
+[sql学习平台](https://igs.sqlzoo.net/wiki/SQL_Tutorial/zh)  
 ## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
