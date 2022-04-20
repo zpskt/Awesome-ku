@@ -17,6 +17,8 @@
 [编程书籍学习github](https://github.com/justjavac/free-programming-books-zh_CN)  
 [编程书籍教学](https://www.bookstack.cn/)  
 [sql学习平台](https://igs.sqlzoo.net/wiki/SQL_Tutorial/zh)  
+[翻译论文](https://www.deepl.com/translator)  
+[润色论文](https://quillbot.com/)  
 ## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
