@@ -19,6 +19,7 @@
 [sql学习平台](https://igs.sqlzoo.net/wiki/SQL_Tutorial/zh)  
 [翻译论文](https://www.deepl.com/translator)  
 [润色论文](https://quillbot.com/)  
+[PDF转Word](https://www.ilovepdf.com/pdf_to_word)  
 ## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
