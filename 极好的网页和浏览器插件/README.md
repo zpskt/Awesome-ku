@@ -28,3 +28,18 @@
 1.  FeHelper:简易postman，进制转换，取色，markdown，思维导图，json转换，图片转base64，js正则表达式，代码压缩，便签笔记等等等等，很多很多
 只有你想不到，很好用，下载它！！！  
     
+## 英语论文语法检测  
+[1](https://www.nounplus.net/grammarcheck/)  
+[2](https://www.grammarly.com)  
+[3](http://www.1checker.com)  
+[4](http://lang-8.com/)  
+[5](https://prowritingaid.com/)  
+[6](http://www.gingersoftware.com)  
+[7](https://www.autocrit.com/)  
+[8](http://virtualwritingtutor.com/)  
+[9](http://www.hemingwayapp.com/)  
+[10](http://www.grammarbase.com)  
+[11](http://www.toptenreviews.com)  
+[12](http://linggle.com/)  
+[13](http://www.editorsoftware.com/StyleWriter.html)  
+[14](http://www.whitesmoke.com/)  
