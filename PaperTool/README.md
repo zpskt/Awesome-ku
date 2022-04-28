@@ -38,3 +38,8 @@
 ## 浏览器插件  
 火狐：
 1.  免费的vpn插件：Hoxx  缺点：只能在浏览器使用
+##写作技巧  
+[写结论与讨论部分](https://www.toutiao.com/article/7078088882859852321/?app=news_article&timestamp=1650502162&use_new_style=1&req_id=20220421084922010158049022242770FF&group_id=7078088882859852321&share_token=0815DCEC-A576-4D48-A80D-26FB70CAAE94&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_ios&utm_campaign=client_share&wxshare_count=1)  
+[论文配图](https://www.toutiao.com/article/7085593368285397543/?app=news_article&timestamp=1649754569&use_new_style=1&req_id=20220412170928010150215203260339E4&group_id=7085593368285397543&share_token=FAFDA75E-68E9-4CA5-8702-9BEE7FAB288D&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_ios&utm_campaign=client_share&wxshare_count=1)  
+[sci论文框架及常用英语句子模板](https://www.doc88.com/p-7324990950573.html)  
+[论文模板2](https://www.toutiao.com/article/7068556628857209358/?app=news_article&timestamp=1646445732&use_new_style=1&req_id=2022030510021101015802821905301748&group_id=7068556628857209358&share_token=DBF89ED8-CF55-4031-98D4-CA75E51234FC&tt_from=weixin&utm_source=weixin&utm_medium=toutiao_ios&utm_campaign=client_share&wxshare_count=1)  
