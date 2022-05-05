@@ -5,7 +5,10 @@
 [好用的网页](极好的网页和浏览器插件/README.md)  
 
 ## 好用的工具  
-[好用的工具](tools_file/README.md)
+[好用的工具](tools_file/README.md)  
+## 谷歌浏览器插件  
+[谷歌浏览器插件](./Google-browser-plugin/README.md)  
+
 ## 技巧知识  
 [PyCharm画结果图](绘图/README.md)  
 
