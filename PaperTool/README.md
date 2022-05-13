@@ -5,6 +5,7 @@
 [画流程图：国内](https://www.processon.com/)  
 [画流程图：国外](https://www.processon.com/)  
 [矢量图标库](https://www.iconfont.cn/)  
+[学术海报模板下载PPT](https://www.posterpresentations.com/free-poster-templates.html)  
 ## 论文排版工具：Latex
 [在线latex网页](https://cn.overleaf.com/)  
 [Latex各种箭头符号总结](https://blog.csdn.net/Artoria_QZH/article/details/103310704)
