@@ -23,4 +23,9 @@
     sudo docker run --name some-nginx -d -p 8080:80 -v $PWD/www:/www -v $PWD/conf/nginx.conf:/etc/nginx/nginx.conf -v $PWD/logs:/wwwlogs registry.docker-cn.com/library/nginx
 
 ps:挂载规则，还有nginx配置文件自己看
+
+5. mysql管理网页  
+
+    docker run -d --name phpmyadmin -e PMA_ARBITRARY=1 -p 8081:80 phpmyadmin  
+
 #
