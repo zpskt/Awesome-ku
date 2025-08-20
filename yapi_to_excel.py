@@ -1,18 +1,63 @@
-import requests
 import json
+
 import pandas as pd
-from openpyxl import Workbook
-from openpyxl.utils.dataframe import dataframe_to_rows
+import requests
+
 
 class YapiToExcel:
-    def __init__(self, yapi_url, token):
+    def __init__(self, yapi_url, token, cookies, project_name, use_test_case):
         self.yapi_url = yapi_url.rstrip('/')
         self.token = token
         self.headers = {
             'Content-Type': 'application/json',
             'Authorization': f'{token}'
         }
-    
+        self.cookies = cookies
+        self.project_name = project_name
+        self.use_test_case = use_test_case
+
+    def _generate_request_body_example(self, schema):
+        """
+        根据JSON Schema生成请求体示例
+        """
+        if not isinstance(schema, dict) or schema.get('type') != 'object':
+            return json.dumps(schema, ensure_ascii=False, indent=2)
+
+        properties = schema.get('properties', {})
+        required = schema.get('required', [])
+
+        # 构建示例请求体
+        example_body = {}
+
+        for prop_name, prop_info in properties.items():
+            if not isinstance(prop_info, dict):
+                continue
+
+            # 获取属性类型
+            prop_type = prop_info.get('type', 'string')
+
+            # 优先使用mock值
+            mock_info = prop_info.get('mock', {})
+            if mock_info and 'mock' in mock_info:
+                example_body[prop_name] = mock_info['mock']
+            else:
+                # 根据类型填充默认值
+                if prop_type == 'string':
+                    example_body[prop_name] = ""
+                elif prop_type == 'integer':
+                    example_body[prop_name] = 0
+                elif prop_type == 'number':
+                    example_body[prop_name] = 0
+                elif prop_type == 'boolean':
+                    example_body[prop_name] = False
+                elif prop_type == 'array':
+                    example_body[prop_name] = []
+                elif prop_type == 'object':
+                    example_body[prop_name] = {}
+                else:
+                    example_body[prop_name] = ""
+
+        return json.dumps(example_body, ensure_ascii=False, indent=2)
     def get_project_list(self):
         """获取项目列表"""
         url = f"{self.yapi_url}/api/project/list"
@@ -32,8 +77,8 @@ class YapiToExcel:
         url = f"{self.yapi_url}/api/interface/list"
         all_interfaces = []
         page = 1
-        limit = 10  # 每页获取10条数据
-        
+        limit = 30  # 每页获取10条数据
+
         while True:
             params = {
                 'project_id': project_id,
@@ -47,21 +92,21 @@ class YapiToExcel:
                 data = result.get('data', {})
                 interfaces = data.get('list', [])
                 all_interfaces.extend(interfaces)
-                
+
                 # 获取总数和当前数据数量
                 total_count = data.get('count', 0)
                 current_count = len(all_interfaces)
-                
+
                 # 如果已获取的数据量大于等于总数，或者当前页没有数据，则停止循环
                 if not interfaces or current_count >= total_count:
                     break
-                    
+
                 page += 1
             else:
                 break
-                
+
         return all_interfaces
-    
+
     def get_interface_detail(self, interface_id):
         """获取接口详情"""
         url = f"{self.yapi_url}/api/interface/get"
@@ -74,53 +119,93 @@ class YapiToExcel:
         if result and result.get('errcode') == 0:
             return result.get('data', {})
         return {}
-    
+
     def get_test_case_list(self, project_id):
-        """获取项目下的测试用例列表"""
-        url = f"{self.yapi_url}/api/test/list"
+        """获取项目下的测试用例集合列表"""
+        url = f"{self.yapi_url}/api/col/list"
         params = {
             'project_id': project_id,
-            'token': self.token
+            # 'token': self.token
         }
-        response = requests.get(url, params=params)
+
+        response = requests.get(url, params=params, cookies=self.cookies)
         result = response.json()
         if result and result.get('errcode') == 0:
             return result.get('data', [])
         return []
-    
+
     def get_test_case_detail(self, test_case_id):
         """获取测试用例详情"""
-        url = f"{self.yapi_url}/api/test/get"
+        url = f"{self.yapi_url}/api/col/case"
         params = {
-            'id': test_case_id,
+            'caseid': test_case_id,
             'token': self.token
         }
-        response = requests.get(url, params=params)
+        response = requests.get(url, params=params, cookies=self.cookies)
         result = response.json()
         if result and result.get('errcode') == 0:
             return result.get('data', {})
         return {}
-    
-    def extract_test_case_data(self, interface_detail):
+
+    def extract_interface_case_data(self, interface_detail):
         """提取测试用例数据"""
         if not interface_detail:
             return None
-            
+        parsed_body = None  # 或者根据业务逻辑设置合适的默认值
         # 请求路径
         path = interface_detail.get('path', '')
-        
+
         # 请求方法
         method = interface_detail.get('method', '')
-        
+
         # 请求头
         req_headers = interface_detail.get('req_headers', [])
         headers_str = json.dumps(req_headers, ensure_ascii=False) if req_headers else ''
-        
+
         # 请求参数
         req_params = interface_detail.get('req_params', [])
         req_query = interface_detail.get('req_query', [])
         req_body = interface_detail.get('req_body_other', '') or interface_detail.get('req_body_form', '')
-        
+        req_body_example = ""  # 用于存储生成的请求体示例
+        # if req_body:
+        #     try:
+        #         # 如果req_body是字符串形式的JSON，解析并格式化
+        #         if isinstance(req_body, str):
+        #             parsed_body = json.loads(req_body)
+        #             req_body = json.dumps(parsed_body, ensure_ascii=False, indent=2)
+        #         # 如果req_body已经是dict格式，直接格式化
+        #         elif isinstance(req_body, dict):
+        #             req_body = json.dumps(req_body, ensure_ascii=False, indent=2)
+        #     except json.JSONDecodeError:
+        #         # 如果解析失败，保持原始数据
+        #         pass
+        if req_body:
+            try:
+                # 如果req_body是字符串形式的JSON，解析
+                if isinstance(req_body, str):
+                    parsed_body = json.loads(req_body)
+                # 如果req_body已经是dict格式
+                elif isinstance(req_body, dict):
+                    parsed_body = req_body
+
+                # 判断是否为JSON Schema格式
+                if isinstance(parsed_body, dict) and 'type' in parsed_body and 'properties' in parsed_body:
+                    # 生成真实的请求体示例
+                    req_body_example = self._generate_request_body_example(parsed_body)
+                    # 保留原始Schema作为备用
+                    req_body = json.dumps(parsed_body, ensure_ascii=False, indent=2)
+                else:
+                    # 普通JSON数据，格式化显示
+                    req_body_example = json.dumps(parsed_body, ensure_ascii=False, indent=2)
+                    req_body = req_body_example
+            except json.JSONDecodeError:
+                # 如果解析失败，保持原始数据
+                pass
+
+        # 如果没有生成示例请求体，则使用处理后的req_body
+        if not req_body_example:
+            req_body_example = req_body
+
         # 合并所有请求参数
         params_info = {
             'req_params': req_params,
@@ -128,103 +213,132 @@ class YapiToExcel:
             'req_body': req_body
         }
         params_str = json.dumps(params_info, ensure_ascii=False)
-        
+
         # 返回结果
         res_body = interface_detail.get('res_body', '')
-        
+
         return {
-            '接口名称': interface_detail.get('title', ''),
+            '项目名称': self.project_name,
+            '测试用例ID': interface_detail.get('_id', ''),
+            '测试用例名称': interface_detail.get('title', ''),
+            '测试用例描述': '',
             '请求路径': path,
             '请求方法': method,
-            '请求头': headers_str,
-            '请求参数': params_str,
-            '返回结果': res_body,
-            '接口ID': interface_detail.get('_id', ''),
-            '创建人': interface_detail.get('username', ''),
+            # 'Header头': headers_str,
+            '请求query': req_query,
+            '请求param': req_params,
+            '请求body': req_body_example,
+            '预期结果': res_body,
             '创建时间': interface_detail.get('add_time', ''),
             '更新时间': interface_detail.get('up_time', '')
         }
-    
+
     def extract_test_collection_data(self, test_case_detail, project_name=""):
         """提取测试集合数据"""
         if not test_case_detail:
             return None
-            
+
         # 提取测试用例基本信息
-        case_name = test_case_detail.get('name', '')
+        case_name = test_case_detail.get('casename', '')
         case_desc = test_case_detail.get('desc', '')
-        
-        # 提取请求信息
-        case_req = test_case_detail.get('req', {})
-        if case_req:
-            path = case_req.get('url', '')
-            method = case_req.get('method', '')
-            
-            # 请求头
-            headers = case_req.get('headers', [])
-            headers_str = json.dumps(headers, ensure_ascii=False) if headers else ''
-            
-            # 请求参数
-            params = case_req.get('params', [])
-            data = case_req.get('data', '')
-            params_info = {
-                'params': params,
-                'data': data
-            }
-            params_str = json.dumps(params_info, ensure_ascii=False)
-            
-            # 预期响应
-            res_body = case_req.get('res_body', '')
-        else:
-            path = ''
-            method = ''
-            headers_str = ''
-            params_str = ''
-            res_body = ''
-        
+
+        path = test_case_detail.get('path', '')
+        method = test_case_detail.get('method', '')
+
+        # 请求头
+        headers = test_case_detail.get('req_headers', [])
+        headers_str = json.dumps(headers, ensure_ascii=False) if headers else ''
+
+        # 请求头
+        headers = test_case_detail.get('req_headers', [])
+        headers_str = json.dumps(headers, ensure_ascii=False, indent=2) if headers else ''
+
+        # 请求参数
+        params = test_case_detail.get('req_query', [])
+        params_str = json.dumps(params, ensure_ascii=False, indent=2) if params else ''
+        req_query = test_case_detail.get('req_query', [])
+
+        # 请求体数据
+        req_body = test_case_detail.get('req_body_other', '')
+        if req_body:
+            try:
+                # 如果req_body是字符串形式的JSON，解析并格式化
+                if isinstance(req_body, str):
+                    parsed_body = json.loads(req_body)
+                    req_body = json.dumps(parsed_body, ensure_ascii=False, indent=2)
+                # 如果req_body已经是dict格式，直接格式化
+                elif isinstance(req_body, dict):
+                    req_body = json.dumps(req_body, ensure_ascii=False, indent=2)
+            except json.JSONDecodeError:
+                # 如果解析失败，保持原始数据
+                pass
+
+        # 预期响应
+        res_body = test_case_detail.get('res_body', '')
+
         return {
-            '项目名称': project_name,
+            '项目名称': self.project_name,
+            '测试用例ID': test_case_detail.get('_id', ''),
             '测试用例名称': case_name,
             '测试用例描述': case_desc,
             '请求路径': path,
             '请求方法': method,
-            '请求头': headers_str,
-            '请求参数': params_str,
+            # 'Header头': headers_str,
+            '请求query': req_query,
+            '请求param': params_str,
+            '请求body': req_body,
             '预期结果': res_body,
-            '测试用例ID': test_case_detail.get('_id', ''),
-            '创建人': test_case_detail.get('username', ''),
             '创建时间': test_case_detail.get('add_time', ''),
             '更新时间': test_case_detail.get('up_time', ''),
-            '类型': '测试集合'
         }
-    
+
     def export_project_to_excel(self, project_id, output_file):
         """导出项目接口到Excel"""
-        # 获取接口列表
-        interfaces = self.get_interface_list(project_id)
-        if not interfaces:
-            print("获取接口列表失败")
-            return
-        
-        test_cases = []
-        
-        for interface in interfaces:
-            interface_id = interface.get('_id')
-            if interface_id:
-                # 获取接口详情
-                detail = self.get_interface_detail(interface_id)
-                test_case_data = self.extract_test_case_data(detail)
-                if test_case_data:
-                    test_cases.append(test_case_data)
-        
-        # 创建DataFrame并导出到Excel
-        if test_cases:
-            df = pd.DataFrame(test_cases)
-            df.to_excel(output_file, index=False)
-            print(f"成功导出 {len(test_cases)} 个接口到 {output_file}")
+        if self.use_test_case:
+            all_test_cases = []
+            test_cases_list = self.get_test_case_list(project_id)
+            if test_cases_list:
+                for test_cases in test_cases_list:
+                    for test_case in test_cases.get('caseList'):
+                        test_case_id = test_case.get('_id')
+                        if test_case_id:
+                            # 获取测试用例详情
+                            detail = self.get_test_case_detail(test_case_id)
+                            test_collection_data = self.extract_test_collection_data(detail, self.project_name)
+                            if test_collection_data:
+                                all_test_cases.append(test_collection_data)
+
+            # 创建DataFrame并导出到Excel
+            if all_test_cases:
+                df = pd.DataFrame(all_test_cases)
+                df.to_excel(output_file, index=False)
+                print(f"成功导出 {len(all_test_cases)} 个接口到 {output_file}")
+            else:
+                print("没有找到有效的接口数据")
         else:
-            print("没有找到有效的接口数据")
-    
+            # 获取接口列表
+            interfaces = self.get_interface_list(project_id)
+            if not interfaces:
+                print("获取接口列表失败")
+                return
+
+            test_cases = []
+            for interface in interfaces:
+                interface_id = interface.get('_id')
+                if interface_id:
+                    # 获取接口详情
+                    detail = self.get_interface_detail(interface_id)
+                    test_case_data = self.extract_interface_case_data(detail)
+                    if test_case_data:
+                        test_cases.append(test_case_data)
+            # 创建DataFrame并导出到Excel
+            if test_cases:
+                df = pd.DataFrame(test_cases)
+                df.to_excel(output_file, index=False)
+                print(f"成功导出 {len(test_cases)} 个接口到 {output_file}")
+            else:
+                print("没有找到有效的接口数据")
+
     def export_all_projects_to_excel(self, output_file):
         """导出所有项目接口到Excel"""
         # 获取项目列表
@@ -232,30 +346,30 @@ class YapiToExcel:
         if not project_data:
             print("获取项目列表失败")
             return
-        
+
         all_test_cases = []
         projects = project_data.get('list', [])
-        
+
         for project in projects:
             project_id = project.get('_id')
             project_name = project.get('name')
             print(f"正在处理项目: {project_name}")
-            
+
             # 获取接口列表
             interfaces = self.get_interface_list(project_id)
             if not interfaces:
                 continue
-            
+
             for interface in interfaces:
                 interface_id = interface.get('_id')
                 if interface_id:
                     # 获取接口详情
                     detail = self.get_interface_detail(interface_id)
-                    test_case_data = self.extract_test_case_data(detail)
+                    test_case_data = self.extract_interface_case_data(detail)
                     if test_case_data:
                         test_case_data['项目名称'] = project_name
                         all_test_cases.append(test_case_data)
-            
+
             # 获取测试用例列表
             test_cases = self.get_test_case_list(project_id)
             if test_cases:
@@ -267,7 +381,7 @@ class YapiToExcel:
                         test_collection_data = self.extract_test_collection_data(detail, project_name)
                         if test_collection_data:
                             all_test_cases.append(test_collection_data)
-        
+
         # 创建DataFrame并导出到Excel
         if all_test_cases:
             df = pd.DataFrame(all_test_cases)
@@ -277,26 +391,77 @@ class YapiToExcel:
                 cols.remove('项目名称')
                 cols.insert(0, '项目名称')
                 df = df[cols]
-            
+
             df.to_excel(output_file, index=False)
             print(f"成功导出 {len(all_test_cases)} 个接口到 {output_file}")
         else:
             print("没有找到有效的接口数据")
 
+
+def _generate_request_body_example(self, schema):
+    """
+    根据JSON Schema生成请求体示例
+    """
+    if not isinstance(schema, dict) or schema.get('type') != 'object':
+        return json.dumps(schema, ensure_ascii=False, indent=2)
+
+    properties = schema.get('properties', {})
+    required = schema.get('required', [])
+
+    # 构建示例请求体
+    example_body = {}
+
+    for prop_name, prop_info in properties.items():
+        if not isinstance(prop_info, dict):
+            continue
+
+        # 获取属性类型
+        prop_type = prop_info.get('type', 'string')
+
+        # 优先使用mock值
+        mock_info = prop_info.get('mock', {})
+        if mock_info and 'mock' in mock_info:
+            example_body[prop_name] = mock_info['mock']
+        else:
+            # 根据类型填充默认值
+            if prop_type == 'string':
+                example_body[prop_name] = ""
+            elif prop_type == 'integer':
+                example_body[prop_name] = 0
+            elif prop_type == 'number':
+                example_body[prop_name] = 0
+            elif prop_type == 'boolean':
+                example_body[prop_name] = False
+            elif prop_type == 'array':
+                example_body[prop_name] = []
+            elif prop_type == 'object':
+                example_body[prop_name] = {}
+            else:
+                example_body[prop_name] = ""
+
+    return json.dumps(example_body, ensure_ascii=False, indent=2)
+
 def main():
-    
     # 直接定义常量
-    YAPI_URL = "your_yapi_server_url"  # 替换为你的Yapi服务器地址
-    TOKEN = "your_token"  # 替换为你的Yapi访问token
-    PROJECT_ID = None  # 项目ID，如果为None则导出所有项目
+    YAPI_URL = "12345"  # 替换为你的Yapi服务器地址
+    TOKEN = "12345"  # 替换为你的Yapi访问token
+    PROJECT_ID = 2848  # 项目ID，如果为None则导出所有项目
     OUTPUT_FILE = "yapi_test_cases.xlsx"  # 输出Excel文件名
-    
-    yapi_client = YapiToExcel(YAPI_URL, TOKEN)
-    
+    # 如果要导出Yapi测试用例集合那么需要去F12 查看cookies
+    cookies = {
+        '_yapi_token': "12345.12345.12345-12345",
+        '_yapi_uid': "12345"
+    }
+    project_name = "12345"
+    use_test_case = True  # 如果想导出Yapi中测试用例集合那么设置为True
+
+    yapi_client = YapiToExcel(YAPI_URL, TOKEN, cookies, project_name=project_name, use_test_case=use_test_case)
+
     if PROJECT_ID:
         yapi_client.export_project_to_excel(PROJECT_ID, OUTPUT_FILE)
     else:
         yapi_client.export_all_projects_to_excel(OUTPUT_FILE)
+
 
 if __name__ == "__main__":
     main()
